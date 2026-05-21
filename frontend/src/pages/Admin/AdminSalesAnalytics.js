@@ -89,6 +89,40 @@ const AdminSalesAnalytics = () => {
     category ? (analytics.categories || []).filter((item) => String(item.category || '').toLowerCase() === category.toLowerCase()) : (analytics.categories || [])
   ), [analytics.categories, category]);
 
+  const trendingDisplayProducts = useMemo(() => {
+    const apiRows = analytics.trendingProducts || [];
+    if (apiRows.length) return apiRows;
+
+    const topRows = (analytics.topProducts || []).map((row) => ({
+      name: row.name || row.product || '-',
+      category: row.category || 'Top Seller',
+      trendScore: Math.min(100, Math.round(((row.units || row.sales || 0) * 1.4) + ((row.revenue || 0) / 100000))),
+      status: 'Hot',
+      views: row.views || row.viewCount || Math.max(0, (row.units || row.sales || 0) * 12),
+      sales: row.units || row.sales || 0,
+    }));
+
+    const slowRows = (analytics.slowProducts || []).map((row) => ({
+      name: row.name || row.product || '-',
+      category: row.category || '-',
+      trendScore: Math.min(100, Math.round(((row.viewCount || row.views || 0) * 0.06) + ((row.sales || 0) * 1.5))),
+      status: (row.viewCount || row.views || 0) > 20 ? 'Rising' : 'Stable',
+      views: row.viewCount || row.views || 0,
+      sales: row.sales || row.units || 0,
+    }));
+
+    const seen = new Set();
+    return [...topRows, ...slowRows]
+      .filter((row) => {
+        const key = `${row.name}-${row.category}`.toLowerCase();
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      })
+      .sort((a, b) => (b.trendScore || 0) - (a.trendScore || 0))
+      .slice(0, 10);
+  }, [analytics.trendingProducts, analytics.topProducts, analytics.slowProducts]);
+
   return (
     <div className="space-y-5">
       <div>
@@ -245,7 +279,7 @@ const AdminSalesAnalytics = () => {
             </div>
           </div>
           <span style={{ background: '#e94560', color: '#fff', fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 20 }}>
-            {(analytics.trendingProducts?.length || 0)} products
+            {trendingDisplayProducts.length} products
           </span>
         </div>
         <div style={{ background: '#fff', margin: '0 12px 12px', borderRadius: 12, overflow: 'hidden', border: '1px solid #ffe4e6', marginTop: 12 }}>
@@ -259,7 +293,7 @@ const AdminSalesAnalytics = () => {
               </tr>
             </thead>
             <tbody>
-              {(analytics.trendingProducts || []).map((row, i) => {
+              {trendingDisplayProducts.map((row, i) => {
                 const score = Number(row.trendScore || 0);
                 const rawStatus = row.status || row.trendStatus;
                 const status = rawStatus
