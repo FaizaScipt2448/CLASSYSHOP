@@ -35,6 +35,7 @@ export const normalizeSalesData = (payload) => {
   const categories = toArray(data.categories || data.categoryBreakdown || data.categoryRevenue);
   const topProducts = toArray(data.topProducts || data.products);
   const slowProducts = toArray(data.slowProducts || data.slowSellingProducts);
+  const trendingProducts = toArray(data.trendingProducts || data.trending || data.trendProducts);
 
   return {
     totalRevenue: numberFrom(data.totalRevenue, data.revenue),
@@ -55,6 +56,15 @@ export const normalizeSalesData = (payload) => {
     })),
     topProducts,
     slowProducts,
+    trendingProducts: trendingProducts.map((item) => ({
+      ...item,
+      name: item.name || item.product?.name || item.product || '-',
+      category: item.category?.name || item.category?.slug || item.category || item.product?.category?.name || item.product?.category || '-',
+      trendScore: numberFrom(item.trendScore, item.score),
+      status: item.status || item.trendStatus || item.trend || 'stable',
+      views: numberFrom(item.views, item.viewCount, item.totalViews, item.hits),
+      sales: numberFrom(item.sales, item.units, item.unitsSold, item.soldCount, item.totalSold),
+    })),
   };
 };
 

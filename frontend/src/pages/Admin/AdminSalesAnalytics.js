@@ -260,10 +260,13 @@ const AdminSalesAnalytics = () => {
             </thead>
             <tbody>
               {(analytics.trendingProducts || []).map((row, i) => {
-                const score = row.trendScore || 1.0;
-                const status = score >= 1.5 ? 'Hot' : score >= 1.2 ? 'Rising' : 'Stable';
-                const statusColor = { Hot: '#e94560', Rising: '#d97706', Stable: '#0891b2' }[status];
-                const statusBg   = { Hot: '#fff1f2', Rising: '#fffbeb', Stable: '#ecfeff' }[status];
+                const score = Number(row.trendScore || 0);
+                const rawStatus = row.status || row.trendStatus;
+                const status = rawStatus
+                  ? String(rawStatus).charAt(0).toUpperCase() + String(rawStatus).slice(1).toLowerCase()
+                  : score >= 80 ? 'Hot' : score >= 60 ? 'Rising' : score >= 40 ? 'Stable' : score >= 20 ? 'Falling' : 'Dead';
+                const statusColor = { Hot: '#e94560', Rising: '#d97706', Stable: '#0891b2', Falling: '#64748b', Dead: '#111827' }[status] || '#0891b2';
+                const statusBg   = { Hot: '#fff1f2', Rising: '#fffbeb', Stable: '#ecfeff', Falling: '#f8fafc', Dead: '#f3f4f6' }[status] || '#ecfeff';
                 return (
                   <tr key={i}
                     style={{ borderTop: '1px solid #ffe4e6', transition: 'background 0.15s' }}
@@ -273,7 +276,7 @@ const AdminSalesAnalytics = () => {
                     <td className="px-4 py-3 text-slate-400 text-xs">{i + 1}</td>
                     <td className="px-4 py-3 font-medium text-slate-800">{row.name || '-'}</td>
                     <td className="px-4 py-3 text-slate-500">{row.category || '-'}</td>
-                    <td className="px-4 py-3 font-bold text-slate-700">{score.toFixed(2)}×</td>
+                    <td className="px-4 py-3 font-bold text-slate-700">{score.toLocaleString('en-PK')}</td>
                     <td className="px-4 py-3">
                       <span className="px-2 py-0.5 rounded-full text-xs font-bold" style={{ color: statusColor, background: statusBg }}>
                         {status}

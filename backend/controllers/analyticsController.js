@@ -119,11 +119,23 @@ const getSalesAnalytics = asyncHandler(async (req, res) => {
   const from = fromValue ? startOfDayIso(fromValue) : new Date(Date.now() - 30 * 86400000).toISOString();
   const to   = toValue   ? endOfDayIso(toValue)    : new Date().toISOString();
 
-  const [trend, categories, topProducts, slowProducts] = await Promise.all([
+  const [trend, categories, topProducts, slowProducts, trendingProducts] = await Promise.all([
     salesSvc.getSalesTrend(from, to, groupBy),
     salesSvc.getCategoryBreakdown(from, to),
     salesSvc.getTopProducts(from, to, 10),
-    Product.find({ sales: { $lte: 2 } }).select(productBaseSelect).sort({ sales: 1, viewCount: -1 }).limit(10)
+    Product.find({ sales: { $lte: 2 } }).select(productBaseSelect).sort({ sales: 1, viewCount: -1 }).limit(10),
+    Product.find({
+      $or: [
+        { trendStatus: { $in: ['hot', 'rising', 'Hot', 'Rising'] } },
+        { trendScore: { $gte: 40 } },
+        { viewCount: { $gte: 1 } },
+        { sales: { $gte: 1 } },
+        { soldCount: { $gte: 1 } }
+      ]
+    })
+      .select(productBaseSelect)
+      .sort({ trendScore: -1, viewCount: -1, sales: -1, soldCount: -1 })
+      .limit(10)
   ]);
 
   const totalRevenue = trend.reduce((sum, item) => sum + (item.revenue || 0), 0);
@@ -142,7 +154,29 @@ const getSalesAnalytics = asyncHandler(async (req, res) => {
     trend,
     categories,
     topProducts,
-    slowProducts
+    slowProducts,
+    trendingProducts: trendingProducts.map(product => {
+      const views = product.viewCount || 0;
+      const sales = product.sales || product.soldCount || 0;
+      const cartCount = product.addToCartCount || 0;
+      const score = product.trendScore || Math.min(100, Math.round((views * 0.05) + (sales * 1.5) + (cartCount * 1.2)));
+      const status = product.trendStatus || trendStatusFromScore(score);
+
+      return {
+        _id: product._id,
+        name: product.name,
+        category: product.category,
+        brand: product.brand,
+        trendScore: score,
+        status,
+        trendStatus: status,
+        views,
+        viewCount: views,
+        sales,
+        units: sales,
+        stock: product.countInStock || 0
+      };
+    })
   });
 });
 
