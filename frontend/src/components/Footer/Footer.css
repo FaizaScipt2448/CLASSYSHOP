@@ -1,0 +1,184 @@
+.footer {
+  margin-top: 40px;
+}
+
+.features-bar {
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 24px 0;
+}
+
+.features-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.feature-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.feature-item span {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.footer-main {
+  background: #fff;
+  padding: 50px 0 30px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1.5fr;
+  gap: 40px;
+}
+
+.footer-col h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 20px;
+}
+
+.footer-col p {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.8;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.footer-phone {
+  color: #e94560 !important;
+  font-size: 16px !important;
+  font-weight: 700;
+}
+
+.online-chat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 10px 14px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.online-chat:hover {
+  border-color: #e94560;
+}
+
+.online-chat svg {
+  font-size: 24px;
+  color: #e94560;
+}
+
+.online-chat div {
+  display: flex;
+  flex-direction: column;
+}
+
+.online-chat strong {
+  font-size: 13px;
+  color: #333;
+}
+
+.online-chat span {
+  font-size: 11px;
+  color: #777;
+}
+
+.footer-col ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-col ul li {
+  margin-bottom: 10px;
+}
+
+.footer-col ul li a {
+  font-size: 13px;
+  color: #666;
+  transition: color 0.2s;
+}
+
+.footer-col ul li a:hover {
+  color: #e94560;
+  padding-left: 5px;
+}
+
+.newsletter-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.newsletter-form input[type="email"] {
+  padding: 10px 14px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.newsletter-form input[type="email"]:focus {
+  border-color: #e94560;
+}
+
+.newsletter-form button {
+  background: #e94560;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.newsletter-form button:hover {
+  background: #c73652;
+}
+
+.agree-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  color: #777;
+  cursor: pointer;
+}
+
+.footer-bottom {
+  background: #0f3460;
+  color: rgba(255,255,255,0.7);
+  text-align: center;
+  padding: 14px;
+  font-size: 13px;
+}

@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell -Command \"Stop-Process -Name node -Force\")",
+      "Bash(node server.js)",
+      "Bash(curl -s http://localhost:5000/api/products?limit=1)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('Backend OK,', len\\(d\\), 'result'\\)\")",
+      "Bash(powershell -Command \"Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force\")",
+      "Bash(cmd /c \"taskkill /PID 17864 /F 2>&1\")"
+    ]
+  }
+}
