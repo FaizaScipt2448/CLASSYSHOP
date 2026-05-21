@@ -17,7 +17,12 @@ export const AuthProvider = ({ children }) => {
           localStorage.setItem('classyshop_user', JSON.stringify(data));
           return;
         }
-      } catch {
+      } catch (error) {
+        if (error?.response?.status === 401) {
+          localStorage.removeItem('classyshop_user');
+          localStorage.removeItem('classyshop_admin_token');
+          return;
+        }
         const savedUser = localStorage.getItem('classyshop_user');
         if (savedUser) setUser(JSON.parse(savedUser));
       } finally {
