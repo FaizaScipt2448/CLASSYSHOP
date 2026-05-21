@@ -49,22 +49,6 @@ const KPI_CARDS = [
   { key: 'productHits',      title: 'Product Hits',               color: '#0369a1', pastel: true, to: '/admin/analytics/hits',            icon: <MdTouchApp /> },
 ];
 
-const DUMMY_TOP_SELLING = [
-  { name: 'Sony WH-1000XM5 Headphones',  units: 212, revenue: 2226000 },
-  { name: 'Nike Air Max 270 White',       units: 174, revenue: 1566000 },
-  { name: 'Apple AirPods Pro 2nd Gen',   units: 148, revenue: 2025000 },
-  { name: 'Levi\'s 511 Slim Fit Jeans', units: 139, revenue:  972300 },
-  { name: 'JBL Flip 6 Bluetooth Speaker', units: 103, revenue: 927000 },
-];
-
-const DUMMY_TOP_VIEWED = [
-  { name: 'Sony WH-1000XM5 Headphones',    category: 'Electronics', viewCount: 3840 },
-  { name: 'Levi\'s 511 Slim Fit Jeans',    category: 'Fashion',     viewCount: 2910 },
-  { name: 'Nykaa BB Cream SPF 30',         category: 'Beauty',      viewCount: 2475 },
-  { name: 'Nike Air Max 270',              category: 'Footwear',    viewCount: 1988 },
-  { name: 'Michael Kors Tote Bag',         category: 'Bags',        viewCount: 1650 },
-];
-
 const Dashboard = () => {
   const { user } = useAuth();
   const firstName = user?.name?.split(' ')[0] || 'Admin';
@@ -93,23 +77,21 @@ const Dashboard = () => {
     load();
   }, []);
 
-  const topProducts = (summary.topProducts && summary.topProducts.length) ? summary.topProducts : DUMMY_TOP_SELLING;
-  const topViewedProds = (summary.topViewedProducts && summary.topViewedProducts.length)
-    ? summary.topViewedProducts
-    : DUMMY_TOP_VIEWED;
+  const topProducts = summary.topProducts || [];
+  const topViewedProds = summary.topViewedProducts || [];
 
-  // Map API data to KPI values — fall back to dummy values when API returns 0/empty
+  // Map API data to KPI values.
   const kpiValues = {
     revenue:          currency(summary.totalRevenue),
     orders:           Number(summary.totalOrders       || 0).toLocaleString('en-PK'),
-    productsSold:     Number(summary.totalProductsSold || 651).toLocaleString('en-PK'),
+    productsSold:     Number(summary.totalProductsSold || 0).toLocaleString('en-PK'),
     returnRate:       percent(summary.returnRate),
     lowStock:         Number(summary.lowStockCount     || 0).toLocaleString('en-PK'),
-    outOfStock:       Number(summary.outOfStockCount   || 8).toLocaleString('en-PK'),
-    trending:         Number(summary.trendingCount     || 6).toLocaleString('en-PK'),
-    mostViewed:       Number(summary.mostViewedProduct?.viewCount || DUMMY_TOP_VIEWED[0].viewCount).toLocaleString('en-PK'),
-    stockSuggestions: Number((summary.stockSuggestions || []).length || 12).toLocaleString('en-PK') + ' alerts',
-    productHits:      Number(summary.totalProductHits || 18240).toLocaleString('en-PK'),
+    outOfStock:       Number(summary.outOfStockCount   || 0).toLocaleString('en-PK'),
+    trending:         Number(summary.trendingCount     || 0).toLocaleString('en-PK'),
+    mostViewed:       Number(summary.mostViewedProduct?.viewCount || summary.mostViewedProduct?.views || 0).toLocaleString('en-PK'),
+    stockSuggestions: Number((summary.stockSuggestions || []).length).toLocaleString('en-PK') + ' alerts',
+    productHits:      Number(summary.totalProductHits || 0).toLocaleString('en-PK'),
   };
 
   const kpiDeltas = { revenue: summary.revenueGrowth };

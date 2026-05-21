@@ -39,7 +39,7 @@ export const normalizeSalesData = (payload) => {
   return {
     totalRevenue: numberFrom(data.totalRevenue, data.revenue),
     totalOrders: numberFrom(data.totalOrders, data.orders),
-    totalSales: numberFrom(data.totalSales, data.salesCount, data.soldUnits),
+    totalSales: numberFrom(data.totalSales, data.productsSold, data.salesCount, data.soldUnits),
     avgOrderValue: numberFrom(data.avgOrderValue, data.averageOrderValue),
     trend: trend.map((item) => ({
       ...item,
@@ -75,6 +75,7 @@ export const normalizeDashboardData = (payload) => {
     lowStockAlerts: toArray(data.lowStockAlerts || data.alerts),
     stockSuggestions: toArray(data.stockSuggestions || data.suggestions),
     mostViewedProduct: data.mostViewedProduct || null,
+    totalProductHits: numberFrom(data.totalProductHits, data.productHits, data.totalViews, data.hits),
   };
 };
 

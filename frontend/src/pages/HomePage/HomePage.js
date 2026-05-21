@@ -98,6 +98,7 @@ const HomePage = () => {
   const [heroIdx, setHeroIdx] = useState(0);
   const [activeTab, setActiveTab] = useState('Fashion');
   const [popularProducts, setPopularProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
   const [latestProducts, setLatestProducts] = useState([]);
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [trendingProducts, setTrendingProducts] = useState([]);
@@ -147,16 +148,19 @@ const HomePage = () => {
 
   const fetchProducts = async () => {
     try {
-      const [pop, lat, feat, cats, trending] = await Promise.all([
-        axios.get('/api/products?popular=true'),
-        axios.get('/api/products?latest=true'),
-        axios.get('/api/products?featured=true'),
+      const [pop, lat, feat, cats, trending, all] = await Promise.all([
+        axios.get('/api/products?popular=true&limit=24'),
+        axios.get('/api/products?latest=true&limit=24'),
+        axios.get('/api/products?featured=true&limit=24'),
         axios.get('/api/categories'),
-        axios.get('/api/recommendations/trending?limit=8')
+        axios.get('/api/recommendations/trending?limit=8'),
+        axios.get('/api/products?limit=100')
       ]);
-      setPopularProducts(pop.data);
-      setLatestProducts(lat.data);
-      setFeaturedProducts(feat.data);
+      const products = Array.isArray(all.data) ? all.data : [];
+      setAllProducts(products);
+      setPopularProducts(pop.data.length ? pop.data : products);
+      setLatestProducts(lat.data.length ? lat.data : products);
+      setFeaturedProducts(feat.data.length ? feat.data : products);
       setDbCategories(cats.data.length > 0 ? cats.data : []);
       setTrendingProducts(trending.data);
     } catch (err) {
@@ -180,9 +184,14 @@ const HomePage = () => {
 
   const categoryIcons = dbCategories.length > 0 ? dbCategories : FALLBACK_CATEGORIES;
 
-  const filteredPopular = popularProducts.filter(p =>
-    p.category.toLowerCase() === activeTab.toLowerCase()
+  const activeCategoryProducts = allProducts.filter(p =>
+    String(p.category || '').toLowerCase() === activeTab.toLowerCase()
   );
+
+  const filteredPopular = popularProducts.filter(p =>
+    String(p.category || '').toLowerCase() === activeTab.toLowerCase()
+  );
+  const popularDisplayProducts = filteredPopular.length > 0 ? filteredPopular : activeCategoryProducts;
 
   const slide = heroSlides[heroIdx];
 
@@ -306,7 +315,7 @@ const HomePage = () => {
           ) : (
             <div className="products-slider-container">
               <div className="products-grid">
-                {(filteredPopular.length > 0 ? filteredPopular : popularProducts.slice(0, 6)).map(product => (
+                {(popularDisplayProducts.length > 0 ? popularDisplayProducts : popularProducts).slice(0, 12).map(product => (
                   <ProductCard key={product._id} product={product} />
                 ))}
               </div>

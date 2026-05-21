@@ -98,10 +98,10 @@ const AdminSalesAnalytics = () => {
       <GlobalFilters showSeason={false} />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <KPICard title="Total Sales" value={Number(analytics.totalSales || 1248).toLocaleString('en-PK')} icon={<MdShoppingBag />} color="#e94560" pastel />
-        <KPICard title="Total Revenue" value={currency(analytics.totalRevenue || 4825000)} icon={<MdTrendingUp />} color="#059669" pastel />
-        <KPICard title="Avg. Order Value" value={currency(analytics.avgOrderValue || 3865)} icon={<MdLeaderboard />} color="#0369a1" pastel />
-        <KPICard title="Total Orders" value={Number(analytics.totalOrders || 312).toLocaleString('en-PK')} icon={<MdShoppingBag />} color="#7c3aed" pastel />
+        <KPICard title="Total Sales" value={Number(analytics.totalSales || 0).toLocaleString('en-PK')} icon={<MdShoppingBag />} color="#e94560" pastel />
+        <KPICard title="Total Revenue" value={currency(analytics.totalRevenue || 0)} icon={<MdTrendingUp />} color="#059669" pastel />
+        <KPICard title="Avg. Order Value" value={currency(analytics.avgOrderValue || 0)} icon={<MdLeaderboard />} color="#0369a1" pastel />
+        <KPICard title="Total Orders" value={Number(analytics.totalOrders || 0).toLocaleString('en-PK')} icon={<MdShoppingBag />} color="#7c3aed" pastel />
       </div>
 
       <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
@@ -172,14 +172,14 @@ const AdminSalesAnalytics = () => {
               </div>
             </div>
             <span style={{ background: '#059669', color: '#fff', fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 20 }}>
-              {(analytics.topProducts?.length || DUMMY_BEST_PRODUCTS.length)} products
+              {(analytics.topProducts?.length || 0)} products
             </span>
           </div>
           <div style={{ background: '#fff', margin: '0 12px 12px', borderRadius: 12, overflow: 'hidden', border: '1px solid #d1fae5', marginTop: 12 }}>
             <DataTable
               loading={loading}
               pageSize={10}
-              data={(analytics.topProducts && analytics.topProducts.length) ? analytics.topProducts : DUMMY_BEST_PRODUCTS}
+              data={analytics.topProducts || []}
               emptyText="No data available for selected date range"
               columns={[
                 { key: 'rank',    header: '#',       render: (row) => row.rank ? (
@@ -211,14 +211,14 @@ const AdminSalesAnalytics = () => {
               </div>
             </div>
             <span style={{ background: '#d97706', color: '#fff', fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 20 }}>
-              {(analytics.slowProducts?.length || DUMMY_SLOW_PRODUCTS.length)} products
+              {(analytics.slowProducts?.length || 0)} products
             </span>
           </div>
           <div style={{ background: '#fff', margin: '0 12px 12px', borderRadius: 12, overflow: 'hidden', border: '1px solid #fef3c7', marginTop: 12 }}>
             <DataTable
               loading={loading}
               pageSize={10}
-              data={(analytics.slowProducts && analytics.slowProducts.length) ? analytics.slowProducts : DUMMY_SLOW_PRODUCTS}
+              data={analytics.slowProducts || []}
               emptyText="No slow-selling product data"
               columns={[
                 { key: 'name',      header: 'Product' },
@@ -245,7 +245,7 @@ const AdminSalesAnalytics = () => {
             </div>
           </div>
           <span style={{ background: '#e94560', color: '#fff', fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 20 }}>
-            {(analytics.trendingProducts?.length || DUMMY_TRENDING_PRODUCTS.length)} products
+            {(analytics.trendingProducts?.length || 0)} products
           </span>
         </div>
         <div style={{ background: '#fff', margin: '0 12px 12px', borderRadius: 12, overflow: 'hidden', border: '1px solid #ffe4e6', marginTop: 12 }}>
@@ -259,10 +259,7 @@ const AdminSalesAnalytics = () => {
               </tr>
             </thead>
             <tbody>
-              {((analytics.trendingProducts && analytics.trendingProducts.length)
-                ? analytics.trendingProducts
-                : DUMMY_TRENDING_PRODUCTS
-              ).map((row, i) => {
+              {(analytics.trendingProducts || []).map((row, i) => {
                 const score = row.trendScore || 1.0;
                 const status = score >= 1.5 ? 'Hot' : score >= 1.2 ? 'Rising' : 'Stable';
                 const statusColor = { Hot: '#e94560', Rising: '#d97706', Stable: '#0891b2' }[status];

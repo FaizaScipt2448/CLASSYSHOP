@@ -6,6 +6,7 @@ const { generateUniqueSlug } = require('../utils/slugUtils');
 const getProducts = asyncHandler(async (req, res) => {
   const { category, subcategory, search, featured, latest, popular, limit } = req.query;
   let query = {};
+  let sort = { createdAt: -1 };
   if (category) query.category = { $regex: new RegExp('^' + category + '$', 'i') };
   if (subcategory) query.subcategory = { $regex: new RegExp('^' + subcategory + '$', 'i') };
   if (search) query.$or = [
@@ -14,11 +15,20 @@ const getProducts = asyncHandler(async (req, res) => {
     { category: { $regex: search, $options: 'i' } },
     { description: { $regex: search, $options: 'i' } }
   ];
-  if (featured === 'true') query.isFeatured = true;
-  if (latest === 'true') query.isLatest = true;
-  if (popular === 'true') query.isPopular = true;
+  if (featured === 'true') {
+    query.isFeatured = true;
+    sort = { updatedAt: -1, createdAt: -1 };
+  }
+  if (latest === 'true') {
+    query.isLatest = true;
+    sort = { createdAt: -1 };
+  }
+  if (popular === 'true') {
+    query.isPopular = true;
+    sort = { sales: -1, soldCount: -1, viewCount: -1, updatedAt: -1 };
+  }
   const lim = parseInt(limit) || 0;
-  const products = await Product.find(query).limit(lim);
+  const products = await Product.find(query).sort(sort).limit(lim);
   res.json(products);
 });
 
