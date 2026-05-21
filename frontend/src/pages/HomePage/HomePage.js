@@ -79,6 +79,32 @@ const TAB_COLORS = {
   Wellness:    { bg: '#ccfbf1', color: '#065f46', activeBg: '#0d9488' },
 };
 
+const getProductCategory = (product = {}) => {
+  const category = product.category;
+  if (typeof category === 'string') return category;
+  return category?.name || category?.slug || '';
+};
+
+const getProductKey = (product = {}) => {
+  if (product._id) return product._id;
+  return [
+    product.name,
+    product.brand,
+    product.price,
+    product.image
+  ].map(value => String(value || '').trim().toLowerCase()).join('|');
+};
+
+const uniqueProducts = (products = []) => {
+  const seen = new Set();
+  return products.filter(product => {
+    const key = getProductKey(product);
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+};
+
 const dealBanners = [
   { bg: '#1a3c5e', title: 'Smart Deals Trending Smartphones', sub: 'Exchange Available!', price: 'from Rs.6,299', btn: 'Shop Now', link: '/category/electronics', image: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=200&h=140&fit=crop' },
   { bg: '#f5a623', title: 'Cold Drinks & Snacks', sub: 'Up to 33% OFF', price: '', btn: 'Shop Now', link: '/category/groceries', image: 'https://images.unsplash.com/photo-1621447504864-d8686e12698c?w=200&h=140&fit=crop' },
@@ -185,13 +211,27 @@ const HomePage = () => {
   const categoryIcons = dbCategories.length > 0 ? dbCategories : FALLBACK_CATEGORIES;
 
   const activeCategoryProducts = allProducts.filter(p =>
-    String(p.category || '').toLowerCase() === activeTab.toLowerCase()
+    getProductCategory(p).toLowerCase() === activeTab.toLowerCase()
   );
 
   const filteredPopular = popularProducts.filter(p =>
-    String(p.category || '').toLowerCase() === activeTab.toLowerCase()
+    getProductCategory(p).toLowerCase() === activeTab.toLowerCase()
   );
-  const popularDisplayProducts = filteredPopular.length > 0 ? filteredPopular : activeCategoryProducts;
+
+  const popularCategoryProducts = uniqueProducts([
+    ...filteredPopular,
+    ...activeCategoryProducts,
+  ]);
+  const popularFallbackProducts = uniqueProducts([
+    ...popularProducts,
+    ...allProducts,
+    ...latestProducts,
+    ...featuredProducts,
+  ]).filter(product => !popularCategoryProducts.some(item => getProductKey(item) === getProductKey(product)));
+  const popularDisplayProducts = uniqueProducts([
+    ...popularCategoryProducts,
+    ...popularFallbackProducts,
+  ]).slice(0, 12);
 
   const slide = heroSlides[heroIdx];
 
@@ -315,7 +355,7 @@ const HomePage = () => {
           ) : (
             <div className="products-slider-container">
               <div className="products-grid">
-                {(popularDisplayProducts.length > 0 ? popularDisplayProducts : popularProducts).slice(0, 12).map(product => (
+                {popularDisplayProducts.map(product => (
                   <ProductCard key={product._id} product={product} />
                 ))}
               </div>
