@@ -5,6 +5,7 @@ import { FaChevronLeft, FaChevronRight, FaTruck, FaChevronDown, FaFire, FaThumbs
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import ProductCard from '../../components/ProductCard/ProductCard';
+import { STATIC_BLOGS } from '../../data/staticBlogs';
 import './HomePage.css';
 
 // Hero slides data
@@ -113,10 +114,10 @@ const dealBanners = [
 ];
 
 const blogs = [
-  { title: 'Shaping sustainable growth for the future solutions', excerpt: "We are excited to hear from you! Whether you're looking for strategic insights, customized solu...", date: '2025-01-17', image: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=300&h=200&fit=crop' },
-  { title: 'Empowering change, delivering every single time success', excerpt: "We are excited to hear from you! Whether you're looking for strategic insights, customized solu...", date: '2025-01-17', image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=300&h=200&fit=crop' },
-  { title: 'Delivering measurable results and precision through proven', excerpt: "We are excited to hear from you! Whether you're looking for strategic insights, customized solu...", date: '2025-01-17', image: 'https://images.unsplash.com/photo-1553484771-371a605b060b?w=300&h=200&fit=crop' },
-  { title: 'Shaping sustainable growth for the future solutions', excerpt: "We are excited to hear from you! Whether you're looking for strategic insights, customized solu...", date: '2025-01-17', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop' }
+  STATIC_BLOGS[0],
+  STATIC_BLOGS[1],
+  { title: 'Delivering measurable results and precision through proven', excerpt: "Practical ideas for improving online store trust, fulfillment, and customer experience.", date: '2025-01-17', image: 'https://images.unsplash.com/photo-1553484771-371a605b060b?w=300&h=200&fit=crop' },
+  { title: 'Shaping sustainable growth for the future solutions', excerpt: "How strong merchandising and better product information can support repeat purchases.", date: '2025-01-17', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop' }
 ];
 
 const HomePage = () => {
@@ -564,17 +565,17 @@ const HomePage = () => {
           </div>
           <div className="blog-grid">
             {blogs.map((blog, i) => (
-              <div key={i} className="blog-card">
+              <Link key={blog.slug || i} to={blog.slug ? `/blogs/${blog.slug}` : '/blogs'} className="blog-card">
                 <div className="blog-img">
                   <img src={blog.image} alt={blog.title} />
-                  <span className="blog-date">&#128336; {blog.date}</span>
+                  <span className="blog-date">&#128336; {new Date(blog.date).toLocaleDateString('en-PK', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                 </div>
                 <div className="blog-content">
                   <h4>{blog.title}</h4>
                   <p>{blog.excerpt}</p>
-                  <Link to="/blog" className="read-more">Read More &gt;</Link>
+                  <span className="read-more">Read More &gt;</span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

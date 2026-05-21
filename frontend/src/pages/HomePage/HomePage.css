@@ -607,6 +607,8 @@
   overflow: hidden;
   border: 1px solid #eee;
   transition: box-shadow 0.2s;
+  color: inherit;
+  text-decoration: none;
 }
 
 .blog-card:hover {
