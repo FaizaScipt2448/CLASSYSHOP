@@ -67,12 +67,12 @@ const CartPage = () => {
 
             {cartItems.map(item => (
               <div key={item._id} className="cart-item-card">
-                <Link to={`/product/${item._id}`} className="cart-item-img-link">
+                <Link to={`/product/${item.slug || item._id}`} className="cart-item-img-link">
                   <img src={item.image} alt={item.name} />
                 </Link>
                 <div className="cart-item-details">
                   <p className="cart-item-brand">{item.brand?.toUpperCase()}</p>
-                  <Link to={`/product/${item._id}`} className="cart-item-name">{item.name}</Link>
+                  <Link to={`/product/${item.slug || item._id}`} className="cart-item-name">{item.name}</Link>
                   <StarRow rating={item.rating || 4} />
                   <div className="cart-item-meta">
                     <select

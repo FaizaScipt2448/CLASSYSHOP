@@ -7,7 +7,8 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "seed": "node data/seeder.js",
-    "seed:analytics": "node scripts/seedAnalyticsData.js"
+    "seed:analytics": "node scripts/seedAnalyticsData.js",
+    "generate:slugs": "node scripts/generateSlugs.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.97.1",

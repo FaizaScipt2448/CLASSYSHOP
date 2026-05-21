@@ -1,7 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const mongoose = require('mongoose');
 const Product = require('../models/Product');
-const { generateUniqueSlug } = require('../utils/slugUtils');
+const { slugify, generateUniqueSlug } = require('../utils/slugUtils');
 
 const getProducts = asyncHandler(async (req, res) => {
   const { category, subcategory, search, featured, latest, popular, limit } = req.query;
@@ -58,6 +58,7 @@ const createProduct = asyncHandler(async (req, res) => {
   const body = { ...req.body };
 
   if (body.slug) {
+    body.slug = slugify(body.slug);
     // Validate uniqueness of explicit slug
     const taken = await Product.findOne({ slug: body.slug });
     if (taken) {
@@ -83,6 +84,7 @@ const updateProduct = asyncHandler(async (req, res) => {
       // Empty slug → regenerate from name
       body.slug = await generateUniqueSlug(body.name || 'product', id);
     } else {
+      body.slug = slugify(body.slug);
       // Explicit new slug → check uniqueness excluding this product
       const taken = await Product.findOne({ slug: body.slug, _id: { $ne: id } });
       if (taken) {
